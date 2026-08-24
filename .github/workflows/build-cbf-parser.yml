@@ -1,0 +1,44 @@
+name: Build CBF Parser
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyInstaller
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyinstaller
+
+      - name: Syntax check
+        run: |
+          python -m py_compile cbf_parser.py
+
+      - name: Build EXE
+        run: |
+          pyinstaller --onefile --clean --name CBFParser cbf_parser.py
+
+      - name: Test EXE
+        run: |
+          .\dist\CBFParser.exe --help
+
+      - name: Upload EXE
+        uses: actions/upload-artifact@v4
+        with:
+          name: CBFParser-Windows
+          path: dist\CBFParser.exe
+          if-no-files-found: error
