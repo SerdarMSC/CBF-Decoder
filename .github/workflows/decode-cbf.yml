@@ -1,14 +1,14 @@
-name: Decode CBF Files
+name: Build CBF Decoder
 
 on:
   workflow_dispatch:
 
 jobs:
-  decode:
-    runs-on: ubuntu-latest
+  build:
+    runs-on: windows-latest
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Setup Python
@@ -16,28 +16,19 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Check Python
-        run: |
-          python --version
+      - name: Install PyInstaller
+        run: pip install pyinstaller
 
-      - name: Find CBF files
+      - name: Build EXE
         run: |
-          echo "CBF files:"
-          find . -type f \( -iname "*.cbf" \) -print
+          pyinstaller --onefile --name CBFDecoder cbf_decoder.py
 
-      - name: Decode CBF files
+      - name: Test EXE
         run: |
-          mkdir -p decoded
-          python cbf_decoder.py ./cbf --out ./decoded
+          .\dist\CBFDecoder.exe --help
 
-      - name: Show decoded files
-        run: |
-          echo "Decoded files:"
-          find ./decoded -type f -print
-
-      - name: Upload decoded results
+      - name: Upload EXE
         uses: actions/upload-artifact@v4
         with:
-          name: cbf-decoded
-          path: decoded/
-          if-no-files-found: error
+          name: CBFDecoder-Windows
+          path: dist\CBFDecoder.exe
