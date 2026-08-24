@@ -1,0 +1,43 @@
+name: Decode CBF Files
+
+on:
+  workflow_dispatch:
+
+jobs:
+  decode:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check Python
+        run: |
+          python --version
+
+      - name: Find CBF files
+        run: |
+          echo "CBF files:"
+          find . -type f \( -iname "*.cbf" \) -print
+
+      - name: Decode CBF files
+        run: |
+          mkdir -p decoded
+          python cbf_decoder.py ./cbf --out ./decoded
+
+      - name: Show decoded files
+        run: |
+          echo "Decoded files:"
+          find ./decoded -type f -print
+
+      - name: Upload decoded results
+        uses: actions/upload-artifact@v4
+        with:
+          name: cbf-decoded
+          path: decoded/
+          if-no-files-found: error
