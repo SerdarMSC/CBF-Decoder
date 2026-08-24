@@ -729,12 +729,12 @@ def scan(
         )
     else:
         raise FileNotFoundError(
-            f"Girdi bulunamadı: {input_path}"
+            f"Girdi bulunamadi: {input_path}"
         )
 
     if not files:
         raise RuntimeError(
-            "CBF dosyası bulunamadı."
+            "CBF dosyasi bulunamadi."
         )
 
     summary = []
@@ -813,21 +813,21 @@ def main():
     parser.add_argument(
         "input",
         help=(
-            "CBF dosyası veya CBF dosyalarının bulunduğu klasör"
+            "CBF dosyasi veya CBF dosyalarinin bulundugu klasor"
         ),
     )
 
     parser.add_argument(
         "--out",
         default="decoded",
-        help="Çıktı klasörü",
+        help="cikti klasoru",
     )
 
     parser.add_argument(
         "--min-string",
         type=int,
         default=4,
-        help="Minimum ASCII string uzunluğu",
+        help="Minimum ASCII string uzunlugu",
     )
 
     args = parser.parse_args()
