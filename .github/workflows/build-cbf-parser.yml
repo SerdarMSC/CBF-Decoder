@@ -4,7 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - "**"
+  pull_request:
 
 jobs:
   build:
@@ -27,18 +28,23 @@ jobs:
       - name: Syntax check
         run: |
           python -m py_compile cbf_parser.py
+          python -m py_compile caesar_struct.py
 
-      - name: Build EXE
+      - name: Build EXEs
         run: |
           pyinstaller --onefile --clean --name CBFParser cbf_parser.py
+          pyinstaller --onefile --clean --name CaesarStruct caesar_struct.py
 
-      - name: Test EXE
+      - name: Test EXEs
         run: |
           .\dist\CBFParser.exe --help
+          .\dist\CaesarStruct.exe --help
 
-      - name: Upload EXE
+      - name: Upload EXEs
         uses: actions/upload-artifact@v4
         with:
           name: CBFParser-Windows
-          path: dist\CBFParser.exe
+          path: |
+            dist\CBFParser.exe
+            dist\CaesarStruct.exe
           if-no-files-found: error
