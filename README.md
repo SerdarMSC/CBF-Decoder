@@ -218,6 +218,44 @@ CBFParser.exe C:\MercedesCBF --out C:\Decoded
 
 No Python installation is required on the machine where the generated standalone EXE is executed.
 
+## Structural Parser (`caesar_struct.py` / `CaesarStruct.exe`)
+
+`cbf_parser.py` scans strings and offsets. `caesar_struct.py` walks the real CBF object tables (Python port of the structure readers in [jglim/CaesarSuite](https://github.com/jglim/CaesarSuite)) and prints, for every diagnostic service, the request template, security level and the exact byte/bit position and size of each parameter.
+
+### Double-click (CSV export)
+
+Run `CaesarStruct.exe` without arguments (double-click). A file dialog opens; select one or more `.CBF` files. Each one is exported to `<name>_services.csv` in the same folder, and a summary dialog lists the created files.
+
+The CSV is UTF-8 (with BOM) and `;`-separated, so Excel opens it directly with correct characters. One row per parameter (request and response):
+
+| Column | Meaning |
+|---|---|
+| `service`, `service_name`, `service_type` | Qualifier, readable name, type (ROUTINE, DATA, DOWNLOAD…) |
+| `security_level` | Security access level (0 = no seed/key) |
+| `request_template`, `request_len` | Request bytes as defined in the CBF |
+| `direction` | `request` or `response` |
+| `byte`, `bit`, `size_bits`, `size_bytes` | Exact position and size of the parameter |
+| `param`, `param_name`, `presentation` | Parameter qualifier, readable name, data type (e.g. `PREP_Unicode_2_42_Byte`) |
+| `const_value` | Fixed value for constant parameters, as request bytes (e.g. `0006`) |
+| `enum_values` | Enumerated values, when the CBF defines them |
+| `description` | Service description text |
+
+### Command line
+
+```cmd
+CaesarStruct.exe IC_204.CBF -f Displaytest
+CaesarStruct.exe IC_204.CBF -f Zeichenkette --outputs
+CaesarStruct.exe IC_204.CBF EGS53.CBF --csv
+CaesarStruct.exe IC_204.CBF --json services.json
+```
+
+- `-f / --filter` — case-insensitive substring filter on the service qualifier
+- `--outputs` — also list response parameters
+- `--csv` — export each given CBF to `<name>_services.csv` instead of printing (honours `--filter`)
+- `--json FILE` — write the selected services to JSON
+
+Both EXEs are built by the GitHub Actions workflow and uploaded together in the `CBFParser-Windows` artifact.
+
 ## GitHub Actions
 
 The repository includes:
